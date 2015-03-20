@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="POST" action="/">
+    {{ form.csrf_token }}
+    {{ form.path.label }} {{ form.path(size=40) }}
+    {{ form.index.label }} {{ form.index() }}
+    {{ form.record_type.label }} {{ form.record_type() }}
+    <input type="submit" value="Run!">
+</form>
+
+<a href="#" data-path="ls">ls</a>
+
+<script>
+
+function reqListener () {
+      console.log(JSON.parse(this.responseText));
+}
+
+var links = document.querySelectorAll('a')
+    
+for(var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', function(e) {
+        var path = e.target.getAttribute('data-path');
+        var oReq = new XMLHttpRequest();
+        oReq.onload = reqListener;
+        oReq.open("post", "/api" , true);
+        var string = JSON.stringify({"path": path});
+        oReq.setRequestHeader('Content-type','application/json; charset=utf-8');
+        oReq.setRequestHeader("Content-length", string.length);
+        oReq.setRequestHeader("Connection", "close");
+        oReq.send(string);
+    })
+}
+
+</script>
+
+{% endblock %}
